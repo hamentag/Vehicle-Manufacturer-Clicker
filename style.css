@@ -12,12 +12,7 @@
   
   
   .column {
-    margin: 10px;
-    padding: 10px ;
-    margin-top: 0px;
-    flex: 1;
     display: flex;
-  
     flex: 0 0 48%; 
     margin: 1%; 
     padding: 10px;
@@ -30,7 +25,7 @@
   .container {
     width: 100%;
     /* height: calc(100vh - 40px); */
-    height: 120px;
+    height: 320px;
   }
   .container.top {
     margin-left: 5px;
