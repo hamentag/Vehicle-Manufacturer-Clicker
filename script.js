@@ -2,45 +2,49 @@
 const data = window.data;
 
 // References
-const producersContainer = document.getElementById('car-producers');
+const carProdContainer = document.getElementById('car-producers');
+const robotProdContainer = document.getElementById('robot-producers');
 
-
+// Event listeners
 const carIcon = document.getElementById('car-icon');
 carIcon.addEventListener('click', () => {
-  car.clickCar();
+  car.clickProduct();
+  render();
 });
 
+const robotIcon = document.getElementById('robot-icon');
+robotIcon.addEventListener('click', () => {
+  robot.clickProduct();
+  render();
+});
+
+// Classes declaration
 class Product {
-  constructor(_product){                    
-    this.count = _product.count;            // car count
+  constructor(_product){
+    this.category = _product.category;
+    this.count = _product.count;            // product count
     this.totalUPPUT = _product.totalUPPUT;  // total units produced per unit time
   }
   getCount() { return this.count; }
-  getTotalUPPUT() { return this.totalUPPUT; }
 
   updateDisplayedCount(){
-    const productCounter = document.getElementById('counter');
+    const productCounter = document.getElementById(`${this.category}-counter`);
     productCounter.innerText = this.count;
   }
-  
-  updateDisplayedTotalUPPUT(){
-    const cpsDiv = document.getElementById(`${this.name}-UPPUT`);
-    cpsDiv.innerText = this.totalUPPUT;
-  }
 
-  clickCar(){
+  updateDisplayedTotalUPPUT(){
+    const upputDiv = document.getElementById(`${this.category}-UPPUT`);
+    upputDiv.innerText = this.totalUPPUT;
+  }
+  clickProduct(){
     this.count += 1;
     this.updateDisplayedCount();
   }
+
   deductCost(cost){
     this.count -= cost; 
   }
-
-  updateDisplayedTotalUPPUT(){
-    const upputDiv = document.getElementById('UPPUT');
-    upputDiv.innerText = this.totalUPPUT;
-  }
-
+  
   increaseThroughput(increase){
     this.totalUPPUT += increase;
     this.updateDisplayedTotalUPPUT();
@@ -48,11 +52,12 @@ class Product {
 }
 
 class Producer { 
-  constructor(_producer){
+  constructor(_category, _producer){
+    this.category = _category;
     this.id = _producer.id;
     this.price = _producer.price;
     this.unlocked = _producer.unlocked;
-    this.cps = _producer.cps;
+    this.upput = _producer.upput;
     this.qty = _producer.qty;
   }
 
@@ -78,68 +83,82 @@ class Producer {
         </div>
         <div class="producer-column">
           <div>Quantity: ${this.qty}</div>
-          <div>Unit/second: ${this.cps}</div>
+          <div>Unit/second: ${this.upput}</div>
           <div>Cost: ${this.price} Unit</div>
         </div>
+        <button type="button" class="${this.category}_button" id="buy_${this.id}">Buy</button>
       `;
       containerDiv.innerHTML = html;
-
-      const btn = document.createElement('button');
-      btn.type = "button";
-      btn.innerHTML = "Buy";
-      btn.id = `buy_${this.id}`;
-      btn.addEventListener('click', (event) => {buyButton_Click(event);});
-
-      containerDiv.append(btn);
       return containerDiv;
     }
     return '';    
   }
-  attemptToBuyProducer(count){
-    if(this.price <= count){
-      car.deductCost(this.price);
-      this.qty += 1;
-      this.price = Math.floor(this.price * 1.25);
-      car.increaseThroughput(this.cps);
+  attemptToBuyProducer(product){
+    if(this.price <= product.getCount()){  
+        product.deductCost(this.price);
+        this.qty += 1;
+        this.price = Math.floor(this.price * 1.25);
+        product.increaseThroughput(this.upput);
     }
     else{
       window.alert("Not enough produced units!");      
-    } 
-
+    }  
+  }
 }
-}
 
-///////
-const car = new Product(data);
+/// Create Product instances
+const car = new Product(data.car);
+const robot = new Product(data.robot);
 
-const carProducers = data.producers.map(producer => {
-  return new Producer(producer);
+/// Create Producer instances
+const carProducers = data.car.producers.map(producer => {
+  return new Producer(data.car.category, producer);
 });
 
-//////////
+const robotProducers = data.robot.producers.map(producer => {
+  return new Producer(data.robot.category, producer);
+});
 
-function render(){  
-    const producers = carProducers.map(producer => {
-      producer.setUnlocked(car.getCount());
-      return producer.makeProducerDiv();
-    }); 
-    producersContainer.replaceChildren(...producers);
-  }
+///////
+function render(){
+  const carProdDivs = carProducers.map(producer => {
+    producer.setUnlocked(car.getCount());
+    return producer.makeProducerDiv();
+  }); 
+  carProdContainer.replaceChildren(...carProdDivs);
 
-  ///  
-  function buyButton_Click(event) {
+  const robotProdDivs = robotProducers.map(producer => {
+    producer.setUnlocked(robot.getCount());
+    return producer.makeProducerDiv();
+  }); 
+  robotProdContainer.replaceChildren(...robotProdDivs);
+
+  const car_buyProdBtns = document.querySelectorAll('.car_button');
+  car_buyProdBtns.forEach(el => el.addEventListener('click', (event) => {
     const producerId = event.target.id.slice(4);
     const selectedProducer = carProducers.find(producer => producer.id === producerId);
-    selectedProducer.attemptToBuyProducer(car.getCount());
+    selectedProducer.attemptToBuyProducer(car);
     render();
-  }
-  
-  ///
-  function tick() {
-    car.count += car.totalUPPUT;
-    car.updateDisplayedCount();
+  })); 
+
+
+  const robot_buyProdBtns = document.querySelectorAll('.robot_button');
+  robot_buyProdBtns.forEach(el => el.addEventListener('click', (event) => {
+    const producerId = event.target.id.slice(4);
+    const selectedProducer = robotProducers.find(producer => producer.id === producerId);
+    selectedProducer.attemptToBuyProducer(robot);
     render();
-  }
-  
-  // Repeat the tick function every 1000ms, or 1s
-  setInterval(() => tick(), 1000);
+  }));
+}
+
+function tick() {
+  car.count += car.totalUPPUT;
+  car.updateDisplayedCount();
+
+  robot.count += robot.totalUPPUT;
+  robot.updateDisplayedCount();
+  render();
+}
+
+// Rpeat the tick function every 2000ms, or 2s
+setInterval(() => tick(), 2000);

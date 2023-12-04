@@ -6,26 +6,24 @@
   }
   .main-container {
     display: flex;
+    flex-wrap: wrap;
     width: 100%;
-    height: 100vh;
+    min-width: 650px;
   }
-  
   
   .column {
     display: flex;
-    flex: 0 0 48%; 
-    margin: 1%; 
+    flex: 0 0 48%;  
+    margin: 1%;  
     padding: 10px;
-  
-  
     flex-direction: column;
     align-items: center;
+    border: 2px solid ;
   }
   
   .container {
     width: 100%;
-    /* height: calc(100vh - 40px); */
-    height: 320px;
+    height: 250px;
   }
   .container.top {
     margin-left: 5px;
@@ -33,8 +31,6 @@
     flex-direction: column;
     align-items: center;
     height: fit-content;
-    border: 1.5px solid;
-    border-radius: 5px;
   }
   
   .producers-title {
@@ -44,7 +40,7 @@
     background-color: white;
     top: 8px;
   }
-  #car-icon{
+  #car-icon, #robot-icon {
     user-select: none;
     font-size: 45px;
     cursor: pointer;
@@ -61,8 +57,26 @@
   .container.bottom {
     padding: 10px;
     overflow: auto;
-    border: 2px black solid;
+    border: 1.5px black solid;
     border-radius: 5px;
+  }
+  
+  .producer {
+    margin-bottom: 5px;
+    padding: 10px;
+    border: 2px solid grey;
+    border-radius: 4px;
+    display: flex;
+    justify-content: space-between;
+  }
+  .producer button{
+    height: fit-content;
+    padding: 5px;
+  }
+  .producer-column {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
   }
   
   .producer-title {
