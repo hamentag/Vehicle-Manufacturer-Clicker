@@ -79,11 +79,22 @@
     justify-content: space-between;
   }
   
-  .producer-title {
-    font-size: 20px;
+  .producer-name {
+    font-size: 18px;
+    color: blue;
+    padding: 5px;
+  }
+
+  .producers-title {
+    background-color: lightgray;
+    padding: 5px;
+    border-radius: 5px;
   }
   
   .producer button {
     font-size: 15px;
     width: 50px;
+  }
+  .bought{
+    background-color:aquamarine;
   }

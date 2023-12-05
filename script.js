@@ -77,18 +77,31 @@ class Producer {
     if(this.unlocked){
       const containerDiv = document.createElement("div");
       containerDiv.className = "producer";
+      if(this.qty > 0){
+        containerDiv.classList.add('bought');
+      }
+    //   containerDiv.id = `producer_${this.id}`;
       const html = `
         <div class="producer-column">
-          <div class="producer-title">${this.makeDisplayNameFromId()}</div>
+          <div class="producer-name">${this.makeDisplayNameFromId()}</div>
         </div>
         <div class="producer-column">
           <div>Quantity: ${this.qty}</div>
           <div>Unit/second: ${this.upput}</div>
           <div>Cost: ${this.price} Unit</div>
         </div>
-        <button type="button" class="${this.category}_button" id="buy_${this.id}">Buy</button>
       `;
+      //<button type="button" class="${this.category}_button" id="buy_${this.id}">Buy</button>
       containerDiv.innerHTML = html;
+      const buyBtn = document.createElement('button');
+      buyBtn.textContent = 'Buy';
+      buyBtn.className = `${this.category}_button`;
+      buyBtn.id = `buy_${this.id}`;
+
+      buyBtn.addEventListener('click', (event) => buyBtnClick(event,this.category));
+
+      containerDiv.append(buyBtn);       
+
       return containerDiv;
     }
     return '';    
@@ -132,24 +145,21 @@ function render(){
     return producer.makeProducerDiv();
   }); 
   robotProdContainer.replaceChildren(...robotProdDivs);
-
-  const car_buyProdBtns = document.querySelectorAll('.car_button');
-  car_buyProdBtns.forEach(el => el.addEventListener('click', (event) => {
-    const producerId = event.target.id.slice(4);
-    const selectedProducer = carProducers.find(producer => producer.id === producerId);
-    selectedProducer.attemptToBuyProducer(car);
-    render();
-  })); 
-
-
-  const robot_buyProdBtns = document.querySelectorAll('.robot_button');
-  robot_buyProdBtns.forEach(el => el.addEventListener('click', (event) => {
-    const producerId = event.target.id.slice(4);
-    const selectedProducer = robotProducers.find(producer => producer.id === producerId);
-    selectedProducer.attemptToBuyProducer(robot);
-    render();
-  }));
 }
+
+/////
+function buyBtnClick(event, category){
+    const producerId = event.target.id.slice(4);
+    if(category === 'car'){
+        const selectedProducer = carProducers.find(producer => producer.id === producerId);
+        selectedProducer.attemptToBuyProducer(car);
+    }
+    else if(category === 'robot'){
+        const selectedProducer = robotProducers.find(producer => producer.id === producerId);
+        selectedProducer.attemptToBuyProducer(robot);
+    }
+    render();
+  }
 
 function tick() {
   car.count += car.totalUPPUT;
