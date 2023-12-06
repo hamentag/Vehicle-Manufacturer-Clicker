@@ -1,6 +1,5 @@
 window.data = {
     car: {
-        category: 'car',         // product category
         count: 0,               // car count
         totalUPPUT: 0,          // total units produced per unit time
 
@@ -93,7 +92,6 @@ window.data = {
     },
 
     robot: {
-        category: 'robot',       // product category
         count: 0,            // robot count
         totalUPPUT: 0,       // total units produced per unit time
 

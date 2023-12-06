@@ -11,7 +11,7 @@
     min-width: 650px;
   }
   
-  .column {
+  .product-container {
     display: flex;
     flex: 0 0 48%;  
     margin: 1%;  
@@ -21,16 +21,12 @@
     border: 2px solid ;
   }
   
-  .container {
-    width: 100%;
-    height: 250px;
-  }
-  .container.top {
-    margin-left: 5px;
+  .top {
     display: flex;
     flex-direction: column;
     align-items: center;
     height: fit-content;
+    width: 100%;
   }
   
   .producers-title {
@@ -54,7 +50,9 @@
     font-size: 20px;
   }
   
-  .container.bottom {
+  .bottom {
+    height: 250px;
+    width: 100%;
     padding: 10px;
     overflow: auto;
     border: 1.5px black solid;

@@ -5,7 +5,7 @@ const data = window.data;
 const carProdContainer = document.getElementById('car-producers');
 const robotProdContainer = document.getElementById('robot-producers');
 
-// Event listeners
+// Event listeners for icons
 const carIcon = document.getElementById('car-icon');
 carIcon.addEventListener('click', () => {
   car.clickProduct();
@@ -20,20 +20,20 @@ robotIcon.addEventListener('click', () => {
 
 // Classes declaration
 class Product {
-  constructor(_product){
-    this.category = _product.category;
+  constructor(_name, _product){
+    this.name = _name;
     this.count = _product.count;            // product count
     this.totalUPPUT = _product.totalUPPUT;  // total units produced per unit time
   }
   getCount() { return this.count; }
 
   updateDisplayedCount(){
-    const productCounter = document.getElementById(`${this.category}-counter`);
+    const productCounter = document.getElementById(`${this.name}-counter`);
     productCounter.innerText = this.count;
   }
 
   updateDisplayedTotalUPPUT(){
-    const upputDiv = document.getElementById(`${this.category}-UPPUT`);
+    const upputDiv = document.getElementById(`${this.name}-UPPUT`);
     upputDiv.innerText = this.totalUPPUT;
   }
   clickProduct(){
@@ -52,8 +52,8 @@ class Product {
 }
 
 class Producer { 
-  constructor(_category, _producer){
-    this.category = _category;
+  constructor(name, _producer){
+    this.name = name;
     this.id = _producer.id;
     this.price = _producer.price;
     this.unlocked = _producer.unlocked;
@@ -80,7 +80,6 @@ class Producer {
       if(this.qty > 0){
         containerDiv.classList.add('bought');
       }
-    //   containerDiv.id = `producer_${this.id}`;
       const html = `
         <div class="producer-column">
           <div class="producer-name">${this.makeDisplayNameFromId()}</div>
@@ -91,14 +90,13 @@ class Producer {
           <div>Cost: ${this.price} Unit</div>
         </div>
       `;
-      //<button type="button" class="${this.category}_button" id="buy_${this.id}">Buy</button>
       containerDiv.innerHTML = html;
       const buyBtn = document.createElement('button');
       buyBtn.textContent = 'Buy';
-      buyBtn.className = `${this.category}_button`;
+      buyBtn.className = `${this.name}_button`;
       buyBtn.id = `buy_${this.id}`;
 
-      buyBtn.addEventListener('click', (event) => buyBtnClick(event,this.category));
+      buyBtn.addEventListener('click', (event) => buyBtnClick(event,this.name));
 
       containerDiv.append(buyBtn);       
 
@@ -120,19 +118,19 @@ class Producer {
 }
 
 /// Create Product instances
-const car = new Product(data.car);
-const robot = new Product(data.robot);
+const car = new Product('car', data.car);
+const robot = new Product('robot', data.robot);
 
 /// Create Producer instances
 const carProducers = data.car.producers.map(producer => {
-  return new Producer(data.car.category, producer);
+  return new Producer('car', producer);
 });
 
 const robotProducers = data.robot.producers.map(producer => {
-  return new Producer(data.robot.category, producer);
+  return new Producer('robot', producer);
 });
 
-///////
+////
 function render(){
   const carProdDivs = carProducers.map(producer => {
     producer.setUnlocked(car.getCount());
@@ -147,20 +145,21 @@ function render(){
   robotProdContainer.replaceChildren(...robotProdDivs);
 }
 
-/////
-function buyBtnClick(event, category){
+// handling buy button events 
+function buyBtnClick(event, name){
     const producerId = event.target.id.slice(4);
-    if(category === 'car'){
+    if(name === 'car'){
         const selectedProducer = carProducers.find(producer => producer.id === producerId);
         selectedProducer.attemptToBuyProducer(car);
     }
-    else if(category === 'robot'){
+    else if(name === 'robot'){
         const selectedProducer = robotProducers.find(producer => producer.id === producerId);
         selectedProducer.attemptToBuyProducer(robot);
     }
     render();
   }
 
+// update car and robot count
 function tick() {
   car.count += car.totalUPPUT;
   car.updateDisplayedCount();
